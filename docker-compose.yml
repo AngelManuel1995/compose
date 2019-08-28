@@ -1,0 +1,36 @@
+version: '3.1'
+
+services:
+  nginx:
+    build:
+     dockerfile: Dockerfile
+     context: ./nginx
+    depends_on:
+      - api
+      - client
+    ports:
+      - '3050:80'
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=C0nt1n3nt4LG0LD!*
+    volumes: 
+      - /opt/inventario-app/db:/data/db
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: ./server
+    depends_on:
+      - mongo
+    environment:
+      - MONGOPORT=27017
+      - MONGODATABASE=inventario
+      - MONGOUSER=root
+      - MONGOPASSWORD=C0nt1n3nt4LG0LD!*
+      - MONGOHOST=mongo
+  client:
+    build:
+      dockerfile: Dockerfile
+      context: ./client
